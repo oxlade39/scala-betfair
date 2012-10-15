@@ -1,5 +1,7 @@
 package com.github.oxlade39.scalabetfair.domain
 
+import org.joda.time.DateTime
+
 /**
  * Represents the identity of a Market on the betfair exchange.
  * For example Man UTD vs Arsenal/Match Odds
@@ -84,4 +86,25 @@ case class MarketPrices(
  market: MarketName,
  inPlayDelay: Int,
  runners: List[RunnerDetail]
+)
+
+/**
+ * Collection of details pertaining to a specific Market on the betfair exchange
+ */
+case class MarketDetail(
+ marketName: MarketName,
+ marketType: String,
+ status: String,
+ eventDate: DateTime,
+ menuPath: List[String],
+ eventHierarchy: List[String],
+ betDelay: String,
+ exchangeId: Int,
+ country: String,
+ lastRefresh: DateTime,
+ numRunners: Int,
+ numPosWinners: Int,
+ amountMatched: Double,
+ supportsStartingPrice: Boolean,
+ turningInPlay: Boolean
 )
