@@ -48,7 +48,7 @@ trait RealResponseParserComponent extends ResponseParserComponent {
     }
 
     def toMarketDetails(response: GetAllMarketsResp) =
-      Option(response).flatMap(r => Option(r.getMarketData)).map(parseResponseString(_)) match {
+      Option(response).flatMap(r => Option(r.getMarketData)).map(parseGetAllMarketsRespString(_)) match {
         case None => Right(RequestError("API error: %s:%s".format(response.getErrorCode, response.getMinorErrorCode)))
         case Some(x) => Left(x)
       }
@@ -64,7 +64,7 @@ trait RealResponseParserComponent extends ResponseParserComponent {
     }
   }
 
-  private[this] def parseResponseString(responseString: String): List[MarketDetail] = {
+  private[this] def parseGetAllMarketsRespString(responseString: String): List[MarketDetail] = {
     val marketsUnparsed: Array[String] = responseString.split(":")
     marketsUnparsed.toList.filter(!_.isEmpty) map {
       singleMarketUnparsed: String =>

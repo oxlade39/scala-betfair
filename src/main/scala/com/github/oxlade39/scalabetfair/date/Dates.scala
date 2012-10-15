@@ -42,11 +42,6 @@ trait XmlDates {
     def dateFactory = () => new DateTime()
   }
 
-  lazy val df: DatatypeFactory = DatatypeFactory.newInstance()
-
-  implicit def dateTimeToXMLGregorianCalendar(dtm: LocalDate): XMLGregorianCalendar =
-    df.newXMLGregorianCalendar(dtm.toDateTime(LocalTime.MIDNIGHT).toGregorianCalendar)
-
   def today: XMLGregorianCalendar = dates.today
 
   def tomorrow: XMLGregorianCalendar = dates.tomorrow
