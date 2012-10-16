@@ -21,7 +21,7 @@ trait RequestFactoryComponent {
 }
 
 class WsdlRequestFactoryComponent extends RequestFactoryComponent {
-  self: HeadersComponent with SessionProviderComponent =>
+  self: HeadersComponent =>
 
   import com.github.oxlade39.scalabetfair.date.dateTimeToXMLGregorianCalendar
 
@@ -45,8 +45,8 @@ class WsdlRequestFactoryComponent extends RequestFactoryComponent {
       countryCode.getCountry.add("GBR")
       allMarketsReq.setCountries(countryCode)
 
-      allMarketsReq.setFromDate(request.between.from.toLocalDate)
-      allMarketsReq.setToDate(request.between.to.toLocalDate)
+      allMarketsReq.setFromDate(request.between.from)
+      allMarketsReq.setToDate(request.between.to)
 
       allMarketsReq.setHeader(headers.v5header)
 

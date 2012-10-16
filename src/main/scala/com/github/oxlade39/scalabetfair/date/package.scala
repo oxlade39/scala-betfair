@@ -1,6 +1,6 @@
 package com.github.oxlade39.scalabetfair
 
-import org.joda.time.{LocalTime, LocalDate}
+import org.joda.time.{DateTime, LocalTime, LocalDate}
 import javax.xml.datatype.{DatatypeFactory, XMLGregorianCalendar}
 
 /**
@@ -9,7 +9,10 @@ import javax.xml.datatype.{DatatypeFactory, XMLGregorianCalendar}
 package object date {
   lazy val df: DatatypeFactory = DatatypeFactory.newInstance()
 
-  implicit def dateTimeToXMLGregorianCalendar(dtm: LocalDate): XMLGregorianCalendar =
-    df.newXMLGregorianCalendar(dtm.toDateTime(LocalTime.MIDNIGHT).toGregorianCalendar)
+  implicit def localDateToXMLGregorianCalendar(dtm: LocalDate): XMLGregorianCalendar =
+    dateTimeToXMLGregorianCalendar(dtm.toDateTime(LocalTime.MIDNIGHT))
+
+  implicit def dateTimeToXMLGregorianCalendar(dtm: DateTime): XMLGregorianCalendar =
+    df.newXMLGregorianCalendar(dtm.toGregorianCalendar)
 
 }
