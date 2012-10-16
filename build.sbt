@@ -22,6 +22,9 @@ libraryDependencies ++= Seq(
   "org.joda" % "joda-convert" % "1.2",
   "org.joda" % "joda-convert" % "1.2",
   "com.github.oxlade39" %% "betfair-ws" % "1.3",
+  "org.pegdown" % "pegdown" % "1.0.2" % "test",
   "org.specs2" %% "specs2" % "1.9" % "test",
   "org.mockito" % "mockito-all" % "1.9.0" % "test"
 )
+
+testOptions in Test += Tests.Argument(TestFrameworks.Specs2, "console", "html")

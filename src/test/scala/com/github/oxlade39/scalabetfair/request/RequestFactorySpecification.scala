@@ -5,7 +5,8 @@ import com.github.oxlade39.scalabetfair.session.SessionProviderComponent
 import org.specs2.mock.Mockito
 import com.betfair.publicapi.types.global.v3.GetEventTypesReq
 import org.joda.time.DateTime
-import com.betfair.publicapi.types.exchange.v5.GetAllMarketsReq
+import com.betfair.publicapi.types.exchange.v5.{GetCompleteMarketPricesCompressedReq, GetAllMarketsReq}
+import com.github.oxlade39.scalabetfair.domain.MarketName
 
 /**
  * @author dan
@@ -52,6 +53,32 @@ class RequestFactorySpecification extends Specification with Mockito {
 
       request.getCountries.getCountry.size mustEqual 1
       request.getCountries.getCountry.get(0) mustEqual "GBR"
+    }
+
+    "create a marketPrices request from the given MarketName" in {
+      val underTest = new UnderTest()
+      val v5Header = new V5Header()
+      underTest.headers.v5header returns v5Header
+
+      val prices = underTest.requestFactory.marketPrices(MarketName(345435, "Market Name"))
+
+      prices.getHeader must_== v5Header
+
+      prices.getCurrencyCode mustEqual "GBP"
+      prices.getMarketId mustEqual 345435
+    }
+
+    "create a market request" in {
+      val underTest = new UnderTest()
+      val v5Header = new V5Header()
+      underTest.headers.v5header returns v5Header
+
+      val market = underTest.requestFactory.market(45789)
+
+      market.getHeader must_== v5Header
+
+      market.getLocale mustEqual "en"
+      market.getMarketId mustEqual 45789
     }
   }
 }
