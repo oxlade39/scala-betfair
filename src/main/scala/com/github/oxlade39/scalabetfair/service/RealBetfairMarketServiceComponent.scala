@@ -7,9 +7,12 @@ import com.betfair.publicapi.types.global.v3.{GetEventTypesReq, GetEventTypesRes
 import com.github.oxlade39.scalabetfair.response.ResponseParserComponent
 
 /**
+ * BetfairMarketService delegating to a GlobalServiceComponent and ExchangeServiceComponent
+ * for making the actualy requests and the RequestFactoryComponent and ResponseParserComponent
+ * for building and parsing the betfair request/response objects.
  * @author dan
  */
-trait RealBetfairServiceComponent extends BetfairService {
+trait RealBetfairMarketServiceComponent extends BetfairMarketService {
   self: RequestFactoryComponent
     with ResponseParserComponent
     with GlobalServiceComponent

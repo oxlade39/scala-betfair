@@ -47,7 +47,7 @@ class ResponseParserSpec extends Specification {
     "return marketDetails from GetAllMarketsResp" in {
       val betfairResponse = new GetAllMarketsResp()
 
-      betfairResponse.setMarketData(exampleMarketDataString)
+      betfairResponse.setMarketData(TestExamples.exampleMarketDataString)
 
       val response = underTest.toMarketDetails(betfairResponse)
 
@@ -94,6 +94,10 @@ class ResponseParserSpec extends Specification {
 
       events mustEqual List(Event(45453, Some("Some Event")), Event(45454, Some("Some Other Event")))
     }
+
+    "return MarketPrices from GetCompleteMarketPricesCompressedResp" in {
+      pending
+    }
   }
 
 
@@ -111,7 +115,9 @@ class ResponseParserSpec extends Specification {
     runner.setSelectionId(id)
     runner
   }
+}
 
+object TestExamples {
   lazy val exampleMarketDataString = {
     val resource = Thread.currentThread().getContextClassLoader.getResourceAsStream("exampleMarketDataString.txt")
     val source = Source.fromInputStream(resource)
