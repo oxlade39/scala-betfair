@@ -44,7 +44,7 @@ trait RealResponseParserComponent extends ResponseParserComponent {
       val prices: InflatedCompleteMarketPrices = new InflatedCompleteMarketPrices(response.getCompleteMarketPrices)
 
       assert(prices.getMarketId.equals (marketName.id),
-        "The marketname must match the market in the compressed prices")
+        "The marketname must match the market in the compressed prices. %s != %s".format(prices.getMarketId, marketName.id))
 
       val zipped: List[(Runner, InflatedCompleteRunner)] = runners.sortBy(_.selectionId).zip(prices.getRunners.sortBy(_.getSelectionId))
       val runnerDetails: List[RunnerDetail] = zipped.map {

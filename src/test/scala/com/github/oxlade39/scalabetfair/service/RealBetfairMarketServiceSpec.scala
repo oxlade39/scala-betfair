@@ -120,7 +120,7 @@ object Example extends App {
     case Right(error) => Right(error)
     case Left(activeEvents) => {
       val soccer: Option[Event] = activeEvents.find(e => e.name.isDefined && e.name.get.contains("Soccer"))
-      val markets = soccer.map(e => ExampleService.allMarkets(AllMarketsRequest(e, DateRange(new DateTime(), new DateTime().plusDays(1)))))
+      val markets = soccer.map(e => ExampleService.allMarkets(AllMarketsRequest(e, TodayAndTomorrow)))
       markets match {
         case None => Right(RequestError("no market details"))
         case Some(Left(Nil)) => Right(RequestError("no market details"))

@@ -8,11 +8,10 @@ import com.betfair.publicapi.types.global.v3.{EventType, ArrayOfEventType, GetEv
 import scala.Left
 import com.github.oxlade39.scalabetfair.request.RequestError
 import com.github.oxlade39.scalabetfair.request.Event
-import com.github.oxlade39.scalabetfair.domain.Runner
 import scala.Right
 import scala.Some
-import com.github.oxlade39.scalabetfair.domain.MarketName
 import com.github.oxlade39.scalabetfair.domain
+import domain.{Runner, MarketName, RunnerDetail}
 
 /**
  * @author dan
@@ -104,14 +103,25 @@ class ResponseParserSpec extends Specification {
     "return MarketPrices from GetCompleteMarketPricesCompressedResp" in {
 
       val bfResponse = new GetCompleteMarketPricesCompressedResp
-      bfResponse.setCompleteMarketPrices("")
+      bfResponse.setCompleteMarketPrices(TestExamples.exampleCompressedCompleteMarketPrices)
 
       val response: Either[domain.MarketPrices, RequestError] = underTest.toMarketPrices(bfResponse,
-        MarketName(1, "Market Name"),
-        List(Runner("runner1", 1), Runner("runner2", 2)))
+        MarketName(107119445, "Market Name"),
+        List(Runner("runner1", 30246), Runner("runner2", 30247)))
 
       response.isLeft mustEqual true
+      val prices = response.left.get
+      prices.market mustEqual MarketName(107119445, "Market Name")
+      prices.inPlayDelay mustEqual 0
+      prices.runners.size mustEqual 2
 
+      val runnerDetail: RunnerDetail = prices.runners.head
+      runnerDetail.runner mustEqual Runner("runner1", 30246)
+      runnerDetail.totalAmountMatched mustEqual 0.0
+      runnerDetail.lastPriceMatched mustEqual 0
+      val bestBack = runnerDetail.bestBacks.head
+      bestBack.backAvailable mustEqual 123.86
+      bestBack.price mustEqual 1.02
     }
   }
 
@@ -133,11 +143,15 @@ class ResponseParserSpec extends Specification {
 }
 
 object TestExamples {
-  lazy val exampleMarketDataString = {
-    val resource = Thread.currentThread().getContextClassLoader.getResourceAsStream("exampleMarketDataString.txt")
+  lazy val exampleMarketDataString = singleLineFromString("exampleMarketDataString.txt")
+  lazy val exampleCompressedCompleteMarketPrices = singleLineFromString("compressedCompleteMarketPrices.txt")
+
+  def singleLineFromString(fileName: String): String = {
+    val resource = Thread.currentThread().getContextClassLoader.getResourceAsStream(fileName)
     val source = Source.fromInputStream(resource)
     try {
       source.getLines().next()
     } finally source.close()
   }
+
 }
