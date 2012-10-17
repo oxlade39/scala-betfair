@@ -1,10 +1,19 @@
 package com.github.oxlade39.scalabetfair.service
 
-import com.betfair.publicapi.types.exchange.v5.{GetAllMarketsReq, GetAllMarketsResp, GetCompleteMarketPricesCompressedReq, GetCompleteMarketPricesCompressedResp}
+import com.betfair.publicapi.types.exchange.v5._
 import com.github.oxlade39.scalabetfair.request.{RequestFactoryComponent, Event, AllMarketsRequest, RequestError}
-import com.github.oxlade39.scalabetfair.domain.{MarketDetail, MarketName, MarketPrices}
+import com.github.oxlade39.scalabetfair.domain.{Runner, MarketDetail, MarketName, MarketPrices}
 import com.betfair.publicapi.types.global.v3.{GetEventTypesReq, GetEventTypesResp}
 import com.github.oxlade39.scalabetfair.response.ResponseParserComponent
+import scala.Left
+import com.github.oxlade39.scalabetfair.request.RequestError
+import com.github.oxlade39.scalabetfair.domain.MarketPrices
+import com.github.oxlade39.scalabetfair.request.AllMarketsRequest
+import com.github.oxlade39.scalabetfair.request.Event
+import com.github.oxlade39.scalabetfair.domain.Runner
+import com.github.oxlade39.scalabetfair.domain.MarketDetail
+import scala.Right
+import com.github.oxlade39.scalabetfair.domain.MarketName
 
 /**
  * BetfairMarketService delegating to a GlobalServiceComponent and ExchangeServiceComponent
@@ -34,7 +43,15 @@ trait RealBetfairMarketServiceComponent extends BetfairMarketService {
   def marketPrices(market: MarketName): Either[MarketPrices, RequestError] = {
     val bfRequest: GetCompleteMarketPricesCompressedReq = requestFactory.marketPrices(market)
     val response: GetCompleteMarketPricesCompressedResp = exchangeService.getCompleteMarketPricesCompressed(bfRequest)
-    responseParser.toMarketPrices(response)
+
+    val bfMarketRequest: GetMarketReq = requestFactory.market(market.id)
+    val getMarketResponse = exchangeService.getMarket(bfMarketRequest)
+    val maybeRunners: Either[List[Runner], RequestError] = responseParser.runnersFromMarket(getMarketResponse)
+
+    maybeRunners match {
+      case Right(error) => Right(error)
+      case Left(runners) => responseParser.toMarketPrices(response, market, runners)
+    }
   }
 }
 

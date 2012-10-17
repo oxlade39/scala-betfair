@@ -12,6 +12,9 @@ import com.github.oxlade39.scalabetfair.domain.Runner
 import com.github.oxlade39.scalabetfair.domain.MarketDetail
 import scala.Right
 import scala.Some
+import com.betfair.publicapi.util.InflatedCompleteMarketPrices.{InflatedCompletePrice, InflatedCompleteRunner}
+import com.betfair.publicapi.util.InflatedCompleteMarketPrices
+import com.github.oxlade39.scalabetfair.domain.RunnerPrice
 
 /**
  * @author dan
@@ -22,18 +25,42 @@ trait ResponseParserComponent {
   trait ResponseParser {
     def toEvents(response: GetEventTypesResp): Either[List[Event], RequestError]
     def toMarketDetails(response: GetAllMarketsResp): Either[List[MarketDetail], RequestError]
-    def toMarketPrices(response: GetCompleteMarketPricesCompressedResp): Either[MarketPrices, RequestError]
     def runnersFromMarket(response: GetMarketResp): Either[List[Runner], RequestError]
+    def runnerPrice(response: InflatedCompletePrice): RunnerPrice
+    def toMarketPrices(response: GetCompleteMarketPricesCompressedResp,
+                       marketName: MarketName,
+                       runners: List[Runner]): Either[MarketPrices, RequestError]
   }
 }
 
 trait RealResponseParserComponent extends ResponseParserComponent {
+  import scala.collection.JavaConversions._
+
   val responseParser = new ResponseParser {
-    def toMarketPrices(response: GetCompleteMarketPricesCompressedResp) = null
+
+    def toMarketPrices(response: GetCompleteMarketPricesCompressedResp,
+                       marketName: MarketName,
+                       runners: List[Runner]): Either[MarketPrices, RequestError] = {
+      val prices: InflatedCompleteMarketPrices = new InflatedCompleteMarketPrices(response.getCompleteMarketPrices)
+
+      assert(prices.getMarketId.equals (marketName.id),
+        "The marketname must match the market in the compressed prices")
+
+      val zipped: List[(Runner, InflatedCompleteRunner)] = runners.sortBy(_.selectionId).zip(prices.getRunners.sortBy(_.getSelectionId))
+      val runnerDetails: List[RunnerDetail] = zipped.map {
+        case (runner: Runner, bfRunner: InflatedCompleteRunner) =>
+          assert(runner.selectionId.equals (bfRunner.getSelectionId),
+            "selectionIds do not match, " + runner.selectionId + " != " + bfRunner.getSelectionId)
+
+          RunnerDetail(runner,
+            bfRunner.getLastPriceMatched,
+            bfRunner.getTotalAmountMatched,
+            bfRunner.getPrices.map(price => runnerPrice(price)).toList)
+      }
+      Left(MarketPrices(marketName, prices.getInPlayDelay, runnerDetails))
+    }
 
     def runnersFromMarket(response: GetMarketResp): Either[List[Runner], RequestError] = {
-      import scala.collection.JavaConversions._
-
       response.getErrorCode match {
         case GetMarketErrorEnum.OK => {
           val jmarket: Market = response.getMarket
@@ -62,6 +89,13 @@ trait RealResponseParserComponent extends ResponseParserComponent {
         case Some(events) => Left(events.toList.map(eventType => Event(eventType.getId, Some(eventType.getName))))
       }
     }
+
+    def runnerPrice(response: InflatedCompletePrice): RunnerPrice =
+      RunnerPrice(
+        response.getPrice,
+        response.getBackAmountAvailable,
+        response.getLayAmountAvailable
+      )
   }
 
   private[this] def parseGetAllMarketsRespString(responseString: String): List[MarketDetail] = {

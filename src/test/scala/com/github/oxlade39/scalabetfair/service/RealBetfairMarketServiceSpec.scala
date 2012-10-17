@@ -5,13 +5,17 @@ import com.github.oxlade39.scalabetfair.request._
 import com.github.oxlade39.scalabetfair.response.ResponseParserComponent
 import org.specs2.mock.Mockito
 import com.betfair.publicapi.types.global.v3.{GetEventTypesResp, GetEventTypesReq}
+import org.joda.time.DateTime
+import com.github.oxlade39.scalabetfair.domain._
 import scala.Left
 import com.github.oxlade39.scalabetfair.request.RequestError
+import com.github.oxlade39.scalabetfair.domain.MarketPrices
 import com.github.oxlade39.scalabetfair.request.AllMarketsRequest
 import com.github.oxlade39.scalabetfair.request.Event
-import org.joda.time.DateTime
-import com.github.oxlade39.scalabetfair.domain.{MarketPrices, MarketName, MarketDetail}
-import com.betfair.publicapi.types.exchange.v5.{GetCompleteMarketPricesCompressedResp, GetCompleteMarketPricesCompressedReq, GetAllMarketsResp, GetAllMarketsReq}
+import com.github.oxlade39.scalabetfair.request.DateRange
+import com.github.oxlade39.scalabetfair.domain.MarketDetail
+import com.github.oxlade39.scalabetfair.domain.MarketName
+import com.betfair.publicapi.types.exchange.v5.{GetMarketResp, GetMarketReq, GetCompleteMarketPricesCompressedResp, GetCompleteMarketPricesCompressedReq, GetAllMarketsReq, GetAllMarketsResp}
 
 /**
  * @author dan
@@ -70,14 +74,23 @@ class RealBetfairMarketServiceSpec extends Specification with Mockito {
       val underTest = new UnderTest
 
       val request = MarketName(34, "Market Name")
+      val marketRunners: List[Runner] = List(Runner("Runner1", 1), Runner("Runner2", 2))
       val bfRequest = new GetCompleteMarketPricesCompressedReq
       val bfResponse = new GetCompleteMarketPricesCompressedResp
+
+      val bfMarketRequest = new GetMarketReq
+      val bfMarketResponse = new GetMarketResp
+
       val parsedResponse: Either[MarketPrices, RequestError] =
-        Left(MarketPrices(MarketName(22, "Market Name"), 10, List()))
+        Left(MarketPrices(request, 10, List()))
+
+      underTest.requestFactory.market(request.id) returns bfMarketRequest
+      underTest.exchangeService.getMarket(bfMarketRequest) returns bfMarketResponse
+      underTest.responseParser.runnersFromMarket(bfMarketResponse) returns Left(marketRunners)
 
       underTest.requestFactory.marketPrices(request) returns bfRequest
       underTest.exchangeService.getCompleteMarketPricesCompressed(bfRequest) returns bfResponse
-      underTest.responseParser.toMarketPrices(bfResponse) returns parsedResponse
+      underTest.responseParser.toMarketPrices(bfResponse, request, marketRunners) returns parsedResponse
 
       val response: Either[MarketPrices, RequestError] =
         underTest.marketPrices(request)
