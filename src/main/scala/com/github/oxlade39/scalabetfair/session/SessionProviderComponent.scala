@@ -16,7 +16,7 @@ trait SessionProviderComponent {
   }
 }
 
-trait WsdlSessionProvider
+trait WsdlSessionProviderComponent
   extends SessionProviderComponent { this: GlobalServiceComponent with CredentialsProviderComponent =>
 
   val sessionProvider = new SessionProvider {

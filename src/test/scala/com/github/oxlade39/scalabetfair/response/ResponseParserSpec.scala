@@ -1,12 +1,18 @@
 package com.github.oxlade39.scalabetfair.response
 
 import org.specs2.mutable.Specification
-import com.betfair.publicapi.types.exchange.v5.{Market => BfMarket, Runner => BfRunner, GetAllMarketsResp, ArrayOfRunner, GetMarketErrorEnum, GetMarketResp}
-import com.github.oxlade39.scalabetfair.request.{Event, RequestError}
-import com.github.oxlade39.scalabetfair.domain.{MarketName, MarketDetail, Runner}
+import com.betfair.publicapi.types.exchange.v5.{Market => BfMarket, Runner => BfRunner, _}
 import io.Source
 import org.joda.time.DateTime
 import com.betfair.publicapi.types.global.v3.{EventType, ArrayOfEventType, GetEventTypesResp}
+import scala.Left
+import com.github.oxlade39.scalabetfair.request.RequestError
+import com.github.oxlade39.scalabetfair.request.Event
+import com.github.oxlade39.scalabetfair.domain.Runner
+import scala.Right
+import scala.Some
+import com.github.oxlade39.scalabetfair.domain.MarketName
+import com.github.oxlade39.scalabetfair.domain
 
 /**
  * @author dan
@@ -96,7 +102,16 @@ class ResponseParserSpec extends Specification {
     }
 
     "return MarketPrices from GetCompleteMarketPricesCompressedResp" in {
-      pending
+
+      val bfResponse = new GetCompleteMarketPricesCompressedResp
+      bfResponse.setCompleteMarketPrices("")
+
+      val response: Either[domain.MarketPrices, RequestError] = underTest.toMarketPrices(bfResponse,
+        MarketName(1, "Market Name"),
+        List(Runner("runner1", 1), Runner("runner2", 2)))
+
+      response.isLeft mustEqual true
+
     }
   }
 

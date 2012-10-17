@@ -20,7 +20,7 @@ trait RequestFactoryComponent {
 
 }
 
-class WsdlRequestFactoryComponent extends RequestFactoryComponent {
+trait WsdlRequestFactoryComponent extends RequestFactoryComponent {
   self: HeadersComponent =>
 
   import com.github.oxlade39.scalabetfair.date.dateTimeToXMLGregorianCalendar

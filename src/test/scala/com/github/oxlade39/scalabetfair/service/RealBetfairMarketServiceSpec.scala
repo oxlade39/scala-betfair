@@ -2,7 +2,7 @@ package com.github.oxlade39.scalabetfair.service
 
 import org.specs2.mutable.Specification
 import com.github.oxlade39.scalabetfair.request._
-import com.github.oxlade39.scalabetfair.response.ResponseParserComponent
+import com.github.oxlade39.scalabetfair.response.{RealResponseParserComponent, ResponseParserComponent}
 import org.specs2.mock.Mockito
 import com.betfair.publicapi.types.global.v3.{GetEventTypesResp, GetEventTypesReq}
 import org.joda.time.DateTime
@@ -16,6 +16,7 @@ import com.github.oxlade39.scalabetfair.request.DateRange
 import com.github.oxlade39.scalabetfair.domain.MarketDetail
 import com.github.oxlade39.scalabetfair.domain.MarketName
 import com.betfair.publicapi.types.exchange.v5.{GetMarketResp, GetMarketReq, GetCompleteMarketPricesCompressedResp, GetCompleteMarketPricesCompressedReq, GetAllMarketsReq, GetAllMarketsResp}
+import com.github.oxlade39.scalabetfair.session.{FSCredentialsProviderComponent, CredentialsProviderComponent, WsdlSessionProviderComponent}
 
 /**
  * @author dan
@@ -101,3 +102,36 @@ class RealBetfairMarketServiceSpec extends Specification with Mockito {
 }
 
 object TodayAndTomorrow extends DateRange(new DateTime(), new DateTime().plusDays(1))
+
+object Example extends App {
+
+  object ExampleService
+    extends RealBetfairMarketServiceComponent
+    with WsdlRequestFactoryComponent
+    with RealResponseParserComponent
+    with WsdlGlobalServiceComponent
+    with WsdlExchangeServiceComponent
+    with HeadersComponent
+    with WsdlSessionProviderComponent
+    with FSCredentialsProviderComponent {
+  }
+
+  val pricesOrError = ExampleService.activeEvents() match {
+    case Right(error) => Right(error)
+    case Left(activeEvents) => {
+      val soccer: Option[Event] = activeEvents.find(e => e.name.isDefined && e.name.get.contains("Soccer"))
+      val markets = soccer.map(e => ExampleService.allMarkets(AllMarketsRequest(e, DateRange(new DateTime(), new DateTime().plusDays(1)))))
+      markets match {
+        case None => Right(RequestError("no market details"))
+        case Some(Left(Nil)) => Right(RequestError("no market details"))
+        case Some(Right(error)) => Right(error)
+        case Some(Left(marketDetails)) => ExampleService.marketPrices(marketDetails.head.marketName)
+      }
+    }
+  }
+
+  println(pricesOrError)
+
+
+
+}
