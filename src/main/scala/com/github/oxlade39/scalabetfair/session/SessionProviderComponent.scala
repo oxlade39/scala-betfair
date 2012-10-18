@@ -17,11 +17,11 @@ trait SessionProviderComponent {
 }
 
 trait WsdlSessionProviderComponent
-  extends SessionProviderComponent { this: GlobalServiceComponent with CredentialsProviderComponent =>
+  extends SessionProviderComponent { this: GlobalServiceComponent with CredentialsComponent =>
 
   val sessionProvider = new SessionProvider {
     def sessionToken = {
-      val login: LoginResp = globalService.login(loginRequest(credentialsProvider.credentials))
+      val login: LoginResp = globalService.login(loginRequest(credentials))
       if (LoginErrorEnum.OK.equals(login.getErrorCode))
         login.getHeader.getSessionToken
       else

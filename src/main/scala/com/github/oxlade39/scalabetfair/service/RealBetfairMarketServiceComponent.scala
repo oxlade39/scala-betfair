@@ -1,10 +1,52 @@
 package com.github.oxlade39.scalabetfair.service
 
 import com.betfair.publicapi.types.exchange.v5._
-import com.github.oxlade39.scalabetfair.request.{RequestFactoryComponent, Event, AllMarketsRequest, RequestError}
+import com.github.oxlade39.scalabetfair.request._
 import com.github.oxlade39.scalabetfair.domain.{Runner, MarketDetail, MarketName, MarketPrices}
 import com.betfair.publicapi.types.global.v3.{GetEventTypesReq, GetEventTypesResp}
-import com.github.oxlade39.scalabetfair.response.ResponseParserComponent
+import com.github.oxlade39.scalabetfair.response.{RealResponseParserComponent, ResponseParserComponent}
+import scala.Left
+import com.github.oxlade39.scalabetfair.domain.MarketPrices
+import com.github.oxlade39.scalabetfair.domain.Runner
+import com.github.oxlade39.scalabetfair.domain.MarketDetail
+import scala.Right
+import com.github.oxlade39.scalabetfair.domain.MarketName
+import scala.Left
+import com.github.oxlade39.scalabetfair.domain.MarketPrices
+import com.github.oxlade39.scalabetfair.domain.Runner
+import com.github.oxlade39.scalabetfair.domain.MarketDetail
+import scala.Right
+import com.github.oxlade39.scalabetfair.domain.MarketName
+import scala.Left
+import com.github.oxlade39.scalabetfair.request.RequestError
+import com.github.oxlade39.scalabetfair.domain.MarketPrices
+import com.github.oxlade39.scalabetfair.request.AllMarketsRequest
+import com.github.oxlade39.scalabetfair.request.Event
+import com.github.oxlade39.scalabetfair.domain.Runner
+import com.github.oxlade39.scalabetfair.domain.MarketDetail
+import scala.Right
+import com.github.oxlade39.scalabetfair.domain.MarketName
+import com.github.oxlade39.scalabetfair.session._
+import scala.Left
+import com.github.oxlade39.scalabetfair.request.RequestError
+import com.github.oxlade39.scalabetfair.domain.MarketPrices
+import com.github.oxlade39.scalabetfair.request.AllMarketsRequest
+import com.github.oxlade39.scalabetfair.request.Event
+import com.github.oxlade39.scalabetfair.domain.Runner
+import com.github.oxlade39.scalabetfair.domain.MarketDetail
+import scala.Right
+import com.github.oxlade39.scalabetfair.domain.MarketName
+import com.github.oxlade39.scalabetfair.date.Dates
+import org.joda.time.DateTime
+import scala.Left
+import com.github.oxlade39.scalabetfair.request.RequestError
+import com.github.oxlade39.scalabetfair.domain.MarketPrices
+import com.github.oxlade39.scalabetfair.request.AllMarketsRequest
+import com.github.oxlade39.scalabetfair.request.Event
+import com.github.oxlade39.scalabetfair.domain.Runner
+import com.github.oxlade39.scalabetfair.domain.MarketDetail
+import scala.Right
+import com.github.oxlade39.scalabetfair.domain.MarketName
 import scala.Left
 import com.github.oxlade39.scalabetfair.request.RequestError
 import com.github.oxlade39.scalabetfair.domain.MarketPrices
@@ -53,5 +95,33 @@ trait RealBetfairMarketServiceComponent extends BetfairMarketService {
       case Left(runners) => responseParser.toMarketPrices(response, market, runners)
     }
   }
+}
+
+/**
+ * Complete stack of caked modules allowing interaction with the
+ * real Betfair Market service using the given Credentials to log in.
+ *
+ * N.B the credentials will be cached as specified by
+ * @param credentials
+ */
+class CachedSessionMarketService(val credentials: Credentials)
+  extends RealBetfairMarketServiceComponent
+  with WsdlRequestFactoryComponent
+  with RealResponseParserComponent
+  with WsdlGlobalServiceComponent
+  with WsdlExchangeServiceComponent
+  with HeadersComponent
+  with CachedSessionProviderComponent
+  with CredentialsComponent
+  with Dates {
+
+  val directSessionProvider = new WsdlSessionProviderComponent
+                                    with WsdlGlobalServiceComponent
+                                    with CredentialsComponent {
+    def credentials = CachedSessionMarketService.this.credentials
+  }
+
+  def delegate = () => directSessionProvider.sessionProvider.sessionToken
+  def dateFactory = () => new DateTime()
 }
 

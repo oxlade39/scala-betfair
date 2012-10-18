@@ -16,7 +16,8 @@ import com.github.oxlade39.scalabetfair.request.DateRange
 import com.github.oxlade39.scalabetfair.domain.MarketDetail
 import com.github.oxlade39.scalabetfair.domain.MarketName
 import com.betfair.publicapi.types.exchange.v5.{GetMarketResp, GetMarketReq, GetCompleteMarketPricesCompressedResp, GetCompleteMarketPricesCompressedReq, GetAllMarketsReq, GetAllMarketsResp}
-import com.github.oxlade39.scalabetfair.session.{FSCredentialsProviderComponent, CredentialsProviderComponent, WsdlSessionProviderComponent}
+import com.github.oxlade39.scalabetfair.session.{Credentials, FSCredentialsComponent, CredentialsComponent, WsdlSessionProviderComponent}
+import com.github.oxlade39.scalabetfair.service.BetfairMarketService
 
 /**
  * @author dan
@@ -103,7 +104,36 @@ class RealBetfairMarketServiceSpec extends Specification with Mockito {
 
 object TodayAndTomorrow extends DateRange(new DateTime(), new DateTime().plusDays(1))
 
-object Example extends App {
+
+trait Example extends App {
+  type ExampleService <: BetfairMarketService
+
+  def exampleService: ExampleService
+
+  def run() {
+    val pricesOrError = exampleService.activeEvents() match {
+      case Right(error) => Right(error)
+      case Left(activeEvents) => {
+        val soccer: Option[Event] = activeEvents.find(e => e.name.isDefined && e.name.get.contains("Soccer"))
+        val markets = soccer.map(e => exampleService.allMarkets(AllMarketsRequest(e, TodayAndTomorrow)))
+        markets match {
+          case None => Right(RequestError("no market details"))
+          case Some(Left(Nil)) => Right(RequestError("no market details"))
+          case Some(Right(error)) => Right(error)
+          case Some(Left(marketDetails)) => exampleService.marketPrices(marketDetails.head.marketName)
+        }
+      }
+    }
+
+    println(pricesOrError)
+    println(pricesOrError)
+    println(pricesOrError)
+  }
+
+  run()
+}
+
+object CakedExample extends Example {
 
   object ExampleService
     extends RealBetfairMarketServiceComponent
@@ -113,25 +143,17 @@ object Example extends App {
     with WsdlExchangeServiceComponent
     with HeadersComponent
     with WsdlSessionProviderComponent
-    with FSCredentialsProviderComponent {
+    with FSCredentialsComponent {
   }
 
-  val pricesOrError = ExampleService.activeEvents() match {
-    case Right(error) => Right(error)
-    case Left(activeEvents) => {
-      val soccer: Option[Event] = activeEvents.find(e => e.name.isDefined && e.name.get.contains("Soccer"))
-      val markets = soccer.map(e => ExampleService.allMarkets(AllMarketsRequest(e, TodayAndTomorrow)))
-      markets match {
-        case None => Right(RequestError("no market details"))
-        case Some(Left(Nil)) => Right(RequestError("no market details"))
-        case Some(Right(error)) => Right(error)
-        case Some(Left(marketDetails)) => ExampleService.marketPrices(marketDetails.head.marketName)
-      }
-    }
-  }
+  type ExampleService = ExampleService.type
+  def exampleService = ExampleService
+}
 
-  println(pricesOrError)
+object PreBakedExample extends Example {
 
+  lazy val service = new CachedSessionMarketService(Credentials.loadCredentialsFromFS)
 
-
+  type ExampleService = CachedSessionMarketService
+  def exampleService = service
 }

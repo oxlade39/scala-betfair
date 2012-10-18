@@ -4,7 +4,7 @@ name := "scala-betfair"
 
 organization := "com.github.oxlade39"
 
-version := "1.0"
+version := "1.1"
 
 crossScalaVersions := Seq("2.9.1", "2.9.2")
 
