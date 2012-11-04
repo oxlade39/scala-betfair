@@ -101,7 +101,7 @@ trait RealBetfairMarketServiceComponent extends BetfairMarketService {
  * Complete stack of caked modules allowing interaction with the
  * real Betfair Market service using the given Credentials to log in.
  *
- * N.B the credentials will be cached as specified by
+ * N.B the credentials will be cached as specified by CachedSessionProviderComponent
  * @param credentials
  */
 class CachedSessionMarketService(val credentials: Credentials)
