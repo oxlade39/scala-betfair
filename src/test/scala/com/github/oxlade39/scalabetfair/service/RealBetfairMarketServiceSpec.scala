@@ -17,7 +17,6 @@ import com.github.oxlade39.scalabetfair.domain.MarketDetail
 import com.github.oxlade39.scalabetfair.domain.MarketName
 import com.betfair.publicapi.types.exchange.v5.{GetMarketResp, GetMarketReq, GetCompleteMarketPricesCompressedResp, GetCompleteMarketPricesCompressedReq, GetAllMarketsReq, GetAllMarketsResp}
 import com.github.oxlade39.scalabetfair.session.{Credentials, FSCredentialsComponent, CredentialsComponent, WsdlSessionProviderComponent}
-import com.github.oxlade39.scalabetfair.service.BetfairMarketService
 
 /**
  * @author dan

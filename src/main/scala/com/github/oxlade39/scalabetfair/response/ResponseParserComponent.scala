@@ -3,7 +3,7 @@ package com.github.oxlade39.scalabetfair.response
 import com.betfair.publicapi.types.exchange.v5._
 import com.github.oxlade39.scalabetfair.domain._
 import com.betfair.publicapi.types.global.v3.GetEventTypesResp
-import org.joda.time.DateTime
+import org.joda.time.{DateTimeZone, DateTime}
 import scala.Left
 import com.github.oxlade39.scalabetfair.request.RequestError
 import com.github.oxlade39.scalabetfair.domain.MarketPrices
@@ -98,6 +98,8 @@ trait RealResponseParserComponent extends ResponseParserComponent {
       )
   }
 
+  val londonTimezone = DateTimeZone.forID("Europe/London")
+
   private[this] def parseGetAllMarketsRespString(responseString: String): List[MarketDetail] = {
     val marketsUnparsed: Array[String] = responseString.split(":")
     marketsUnparsed.toList.filter(!_.isEmpty) map {
@@ -107,13 +109,13 @@ trait RealResponseParserComponent extends ResponseParserComponent {
           MarketName(marketFields(0).toInt, marketFields(1)),
           marketFields(2),
           marketFields(3),
-          new DateTime().withMillis(marketFields(4).toLong),
+          new DateTime(londonTimezone).withMillis(marketFields(4).toLong),
           marketFields(5).split("\\\\").drop(1).toList.map(_.trim()),
           marketFields(6).split("/").drop(1).toList,
           marketFields(7),
           marketFields(8).toInt,
           marketFields(9),
-          new DateTime().withMillis(marketFields(10).toLong),
+          new DateTime(londonTimezone).withMillis(marketFields(10).toLong),
           marketFields(11).toInt,
           marketFields(12).toInt,
           marketFields(13).toDouble,

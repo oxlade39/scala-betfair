@@ -3,7 +3,7 @@ package com.github.oxlade39.scalabetfair.response
 import org.specs2.mutable.Specification
 import com.betfair.publicapi.types.exchange.v5.{Market => BfMarket, Runner => BfRunner, _}
 import io.Source
-import org.joda.time.DateTime
+import org.joda.time.{DateTimeZone, DateTime}
 import com.betfair.publicapi.types.global.v3.{EventType, ArrayOfEventType, GetEventTypesResp}
 import scala.Left
 import com.github.oxlade39.scalabetfair.request.RequestError
@@ -12,11 +12,13 @@ import scala.Right
 import scala.Some
 import com.github.oxlade39.scalabetfair.domain
 import domain.{Runner, MarketName, RunnerDetail}
+import java.util.TimeZone
 
 /**
  * @author dan
  */
 class ResponseParserSpec extends Specification {
+  val londonTimezone = DateTimeZone.forID("Europe/London")
 
   val underTest = new RealResponseParserComponent {}.responseParser
 
@@ -69,7 +71,7 @@ class ResponseParserSpec extends Specification {
       firstMarketDetails.betDelay mustEqual "8"
       firstMarketDetails.country mustEqual("GBR")
 
-      val expectedEventDate = new DateTime().withYear(2012).withMonthOfYear(10).withDayOfMonth(16)
+      val expectedEventDate = new DateTime(londonTimezone).withYear(2012).withMonthOfYear(10).withDayOfMonth(16)
         .withHourOfDay(19).withMinuteOfHour(45)
         .withSecondOfMinute(0).withMillisOfSecond(0)
 
