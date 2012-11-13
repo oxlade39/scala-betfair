@@ -66,7 +66,10 @@ private class InternalPriceHistory(values: Seq[BigDecimal], val size: Int, maxSi
   }
   lazy val variance: BigDecimal = squareDifferences.sum / squareDifferences.size
   lazy val momentum: BigDecimal = values.head - last
-  lazy val rateOfChange: BigDecimal = (values.head - last) / last
+  lazy val rateOfChange: BigDecimal = last match {
+    case zero if(zero == BigDecimal(0)) => BigDecimal(0)
+    case nonZero => (values.head - nonZero) / nonZero
+  }
 
   private[this] lazy val last = values(size - 1)
 
