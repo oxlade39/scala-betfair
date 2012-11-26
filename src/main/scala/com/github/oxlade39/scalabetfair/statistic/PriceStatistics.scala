@@ -3,6 +3,7 @@ package com.github.oxlade39.scalabetfair.statistic
 import com.github.oxlade39.scalabetfair.math.BigDecimalMath
 
 trait PriceStatistics {
+  def currentPrice: BigDecimal
   def average: BigDecimal
   def standardDeviation: BigDecimal
   def variance: BigDecimal
@@ -57,6 +58,8 @@ object PriceHistory {
 
 private class InternalPriceHistory(values: Seq[BigDecimal], val size: Int, maxSize: Int, total: BigDecimal)
   extends PriceHistory {
+
+  val currentPrice = values.head
 
   lazy val average: BigDecimal = if(size == 0) 0 else total / size
 

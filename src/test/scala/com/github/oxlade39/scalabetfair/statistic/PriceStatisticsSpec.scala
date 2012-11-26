@@ -10,6 +10,15 @@ import PriceHistory.fromList
  */
 class PriceStatisticsSpec extends Specification {
   "PriceHistory" should {
+    "has a currentPrice equal to the last added price" in {
+      var values = PriceHistory(maxSize = 10)
+        .add("1.13")
+        .add("1.14")
+        .add("1.15")
+
+      values.currentPrice mustEqual BigDecimal("1.15")
+    }
+
     "have an average of the list of values" in {
       var values = PriceHistory(maxSize = 10)
                     .add("1.11")
