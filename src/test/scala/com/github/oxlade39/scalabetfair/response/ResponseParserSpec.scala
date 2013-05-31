@@ -119,11 +119,11 @@ class ResponseParserSpec extends Specification {
 
       val runnerDetail: RunnerDetail = prices.runners.head
       runnerDetail.runner mustEqual Runner("runner1", 30246)
-      runnerDetail.totalAmountMatched mustEqual 0.0
-      runnerDetail.lastPriceMatched mustEqual 0
+      runnerDetail.totalAmountMatched mustEqual BigDecimal("0.0")
+      runnerDetail.lastPriceMatched mustEqual BigDecimal(0)
       val bestBack = runnerDetail.bestBacks.head
-      bestBack.backAvailable mustEqual 123.86
-      bestBack.price mustEqual 1.02
+      bestBack.backAvailable mustEqual BigDecimal("123.86")
+      bestBack.price mustEqual BigDecimal("1.02")
     }
   }
 

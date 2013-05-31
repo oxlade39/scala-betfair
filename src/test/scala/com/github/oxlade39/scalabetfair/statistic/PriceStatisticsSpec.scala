@@ -69,7 +69,7 @@ class PriceStatisticsSpec extends Specification {
         :: BigDecimal(2) :: BigDecimal(1) :: Nil).rateOfChange mustEqual(4)
 
       (BigDecimal(1) :: BigDecimal(2) :: BigDecimal(3)
-        :: BigDecimal(4) :: BigDecimal(5) :: Nil).rateOfChange mustEqual(-0.8)
+        :: BigDecimal(4) :: BigDecimal(5) :: Nil).rateOfChange mustEqual(BigDecimal("-0.8"))
     }
 
     "handle zero variance" in {
@@ -81,7 +81,7 @@ class PriceStatisticsSpec extends Specification {
     }
 
     "give the rate of change as first minus last over last" in {
-      var priceHistory = PriceHistory()
+      val priceHistory = PriceHistory()
         .add(BigDecimal(1))
         .add(BigDecimal(2))
         .add(BigDecimal(3))
