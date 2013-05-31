@@ -6,7 +6,7 @@ organization := "com.github.oxlade39"
 
 version := "1.5-SNAPSHOT"
 
-crossScalaVersions := Seq("2.9.1", "2.9.2")
+crossScalaVersions := Seq("2.9.1", "2.9.2", "2.10.0", "2.10.1")
 
 // Java then Scala for main sources
 compileOrder in Compile := CompileOrder.JavaThenScala
@@ -23,7 +23,7 @@ libraryDependencies ++= Seq(
   "org.joda" % "joda-convert" % "1.2",
   "com.github.oxlade39" % "betfair-ws" % "1.5",
   "org.pegdown" % "pegdown" % "1.0.2" % "test",
-  "org.specs2" %% "specs2" % "1.9" % "test",
+  "org.specs2" %% "specs2" % "1.11" % "test",
   "org.mockito" % "mockito-all" % "1.9.0" % "test"
 )
 
