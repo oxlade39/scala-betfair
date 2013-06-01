@@ -7,7 +7,7 @@ Example Usage
 -------------
 ### Create a `BetfairMarketService` :
 
-    // Load from a file '~/.trender/credentials
+    // Load from a file '~/.trender/credentials'
     val credentials = Credentials.loadCredentialsFromFS
     // create a BetfairMarketService which caches the Betfair session token for 1 hour
     val betfair = new CachedSessionMarketService(Credentials.loadCredentialsFromFS)
