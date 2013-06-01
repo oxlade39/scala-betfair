@@ -4,7 +4,7 @@ name := "scala-betfair"
 
 organization := "com.github.oxlade39"
 
-version := "1.5-SNAPSHOT"
+version := "1.6-SNAPSHOT"
 
 scalaVersion := "2.10.1"
 
