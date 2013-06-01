@@ -16,16 +16,16 @@ Example Usage
 
     // search for an Event name containing 'Racing' (like 'Horse Racing')
     // then fetch MarketPrices for races for TodayAndTomorrow
-    val pricesOrError = exampleService.activeEvents() match {
+    val pricesOrError = betfair.activeEvents() match {
       case Right(error) => Right(error)
       case Left(activeEvents) => {
         val racing: Option[Event] = activeEvents.find(e => e.name.isDefined && e.name.get.contains("Racing"))
-        val markets = racing.map(e => exampleService.allMarkets(AllMarketsRequest(e, TodayAndTomorrow)))
+        val markets = racing.map(e => betfair.allMarkets(AllMarketsRequest(e, TodayAndTomorrow)))
         markets match {
           case None => Right(RequestError("no market details"))
           case Some(Left(Nil)) => Right(RequestError("no market details"))
           case Some(Right(error)) => Right(error)
-          case Some(Left(marketDetails)) => exampleService.marketPrices(marketDetails.head.marketName)
+          case Some(Left(marketDetails)) => betfair.marketPrices(marketDetails.head.marketName)
         }
       }
     }
