@@ -16,10 +16,10 @@ class DatesSpec extends Specification {
 
   "Dates" should {
     "give me the date today" in {
-      Dates.today mustEqual(NOW.toLocalDate)
+      Dates.today mustEqual NOW.toLocalDate
     }
     "give me the date tomorrow" in {
-      Dates.tomorrow mustEqual(NOW.toLocalDate.plusDays(1))
+      Dates.tomorrow mustEqual NOW.toLocalDate.plusDays(1)
     }
   }
 }
@@ -37,7 +37,7 @@ class XmlDatesSpec extends Specification {
   "XmlDates" should {
     "convert LocalDate to XmlGregorianCalendar" in {
       println(XmlDates.tomorrow)
-      XmlDates.tomorrow mustEqual(XmlDates.tomorrow)
+      XmlDates.tomorrow mustEqual XmlDates.tomorrow
     }
   }
 }

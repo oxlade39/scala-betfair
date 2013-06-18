@@ -113,8 +113,8 @@ trait Example extends App {
     val pricesOrError = exampleService.activeEvents() match {
       case Right(error) => Right(error)
       case Left(activeEvents) => {
-        val soccer: Option[Event] = activeEvents.find(e => e.name.isDefined && e.name.get.contains("Soccer"))
-        val markets = soccer.map(e => exampleService.allMarkets(AllMarketsRequest(e, TodayAndTomorrow)))
+        val racing: Option[Event] = activeEvents.find(e => e.name.isDefined && e.name.get.contains("Racing"))
+        val markets = racing.map(e => exampleService.allMarkets(AllMarketsRequest(e, TodayAndTomorrow)))
         markets match {
           case None => Right(RequestError("no market details"))
           case Some(Left(Nil)) => Right(RequestError("no market details"))

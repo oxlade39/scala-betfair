@@ -4,7 +4,7 @@ import com.github.oxlade39.scalabetfair.request.{AllMarketsRequest, RequestError
 import com.github.oxlade39.scalabetfair.domain.{MarketPrices, MarketName, MarketDetail}
 
 /**
- * Betfair service facade which interacts with the remote exchange to.
+ * Betfair service facade which interacts with the remote exchange to
  * fetch market information and prices.
  *
  * @author dan

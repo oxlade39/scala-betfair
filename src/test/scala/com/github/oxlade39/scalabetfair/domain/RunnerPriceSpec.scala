@@ -20,7 +20,7 @@ class RunnerDetailSpec extends Specification {
 
 class RunnerPriceSpec extends Specification {
   "RunnerPrice" should {
-    "be backable is the is a non zero backAvailable" in {
+    "be backable if there is a non zero backAvailable" in {
       val price: RunnerPrice = RunnerPrice(100, 1, 0)
       price.isBackable mustEqual true
       RunnerPrice(100, "1.5", 0).isBackable mustEqual true
@@ -29,7 +29,7 @@ class RunnerPriceSpec extends Specification {
       RunnerPrice(100, 0, 1).isBackable mustEqual false
     }
 
-    "be layable is the is a non zero backAvailable" in {
+    "be layable if there is a non zero backAvailable" in {
       RunnerPrice(100, 0, 1).isLayable mustEqual true
       RunnerPrice(100, 0, "1.5").isLayable mustEqual true
       RunnerPrice(100, 1, "0.1").isLayable mustEqual true
