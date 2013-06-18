@@ -11,7 +11,7 @@ import PriceHistory.fromList
 class PriceStatisticsSpec extends Specification {
   "PriceHistory" should {
     "has a currentPrice equal to the last added price" in {
-      var values = PriceHistory(maxSize = 10)
+      val values = PriceHistory(maxSize = 10)
         .add("1.13")
         .add("1.14")
         .add("1.15")
@@ -28,7 +28,7 @@ class PriceStatisticsSpec extends Specification {
                     .add("1.15")
 
       var expectedAverage: BigDecimal = (BigDecimal("1.11") + "1.12" + "1.13" + "1.14" + "1.15") / "5"
-      values.average mustEqual (expectedAverage)
+      values.average mustEqual expectedAverage
 
       values = PriceHistory(maxSize = 10)
                 .add(1)
@@ -38,7 +38,7 @@ class PriceStatisticsSpec extends Specification {
                 .add(2)
                 .add(3)
       expectedAverage = (BigDecimal(1) + "2" + "3" + "1" + "2" + "3") / 6
-      values.average mustEqual (2)
+      values.average mustEqual 2
     }
 
     "have a standard deviation of the list of values" in {
@@ -53,30 +53,30 @@ class PriceStatisticsSpec extends Specification {
       val variance: BigDecimal = sumOfDifferencesSquared / 6
       val expectedStandardDeviation: BigDecimal = BigDecimalMath.sqrt(variance)
 
-      values.standardDeviation mustEqual(expectedStandardDeviation)
+      values.standardDeviation mustEqual expectedStandardDeviation
     }
 
     "have a momentum of the first minus the last value" in {
       (BigDecimal(5) :: BigDecimal(4) :: BigDecimal(3)
-        :: BigDecimal(2) :: BigDecimal(1) :: Nil).momentum mustEqual(4)
+        :: BigDecimal(2) :: BigDecimal(1) :: Nil).momentum mustEqual 4
 
       (BigDecimal(10) :: BigDecimal(8) :: BigDecimal(6)
-        :: BigDecimal(4) :: BigDecimal(2) :: Nil).momentum mustEqual(8)
+        :: BigDecimal(4) :: BigDecimal(2) :: Nil).momentum mustEqual 8
     }
 
     "have a rate of change equal (first - last) / last value" in  {
       (BigDecimal(5) :: BigDecimal(4) :: BigDecimal(3)
-        :: BigDecimal(2) :: BigDecimal(1) :: Nil).rateOfChange mustEqual(4)
+        :: BigDecimal(2) :: BigDecimal(1) :: Nil).rateOfChange mustEqual 4
 
       (BigDecimal(1) :: BigDecimal(2) :: BigDecimal(3)
-        :: BigDecimal(4) :: BigDecimal(5) :: Nil).rateOfChange mustEqual(BigDecimal("-0.8"))
+        :: BigDecimal(4) :: BigDecimal(5) :: Nil).rateOfChange mustEqual BigDecimal("-0.8")
     }
 
     "handle zero variance" in {
 
       val noVariance = BigDecimal("1.55") :: BigDecimal("1.55") :: Nil
-      noVariance.variance mustEqual(BigDecimal(0))
-      noVariance.standardDeviation mustEqual(BigDecimal(0))
+      noVariance.variance mustEqual BigDecimal(0)
+      noVariance.standardDeviation mustEqual BigDecimal(0)
 
     }
 
