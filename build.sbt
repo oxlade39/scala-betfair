@@ -6,9 +6,9 @@ organization := "com.github.oxlade39"
 
 version := "1.6-SNAPSHOT"
 
-scalaVersion := "2.10.1"
+scalaVersion := "2.10.2"
 
-crossScalaVersions := Seq("2.9.1", "2.9.2", "2.10.0", "2.10.1")
+crossScalaVersions := Seq("2.9.1", "2.9.2", "2.10.0", "2.10.1", "2.10.2")
 
 // Java then Scala for main sources
 compileOrder in Compile := CompileOrder.JavaThenScala
