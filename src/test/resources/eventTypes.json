@@ -1,0 +1,212 @@
+[
+    {
+        "eventType": {
+            "id": "468328",
+            "name": "Handball"
+        },
+        "marketCount": 122
+    },
+    {
+        "eventType": {
+            "id": "1",
+            "name": "Soccer"
+        },
+        "marketCount": 13481
+    },
+    {
+        "eventType": {
+            "id": "2",
+            "name": "Tennis"
+        },
+        "marketCount": 367
+    },
+    {
+        "eventType": {
+            "id": "3",
+            "name": "Golf"
+        },
+        "marketCount": 54
+    },
+    {
+        "eventType": {
+            "id": "4",
+            "name": "Cricket"
+        },
+        "marketCount": 169
+    },
+    {
+        "eventType": {
+            "id": "5",
+            "name": "Rugby Union"
+        },
+        "marketCount": 272
+    },
+    {
+        "eventType": {
+            "id": "6",
+            "name": "Boxing"
+        },
+        "marketCount": 83
+    },
+    {
+        "eventType": {
+            "id": "7",
+            "name": "Horse Racing"
+        },
+        "marketCount": 448
+    },
+    {
+        "eventType": {
+            "id": "8",
+            "name": "Motor Sport"
+        },
+        "marketCount": 41
+    },
+    {
+        "eventType": {
+            "id": "7524",
+            "name": "Ice Hockey"
+        },
+        "marketCount": 890
+    },
+    {
+        "eventType": {
+            "id": "10",
+            "name": "Special Bets"
+        },
+        "marketCount": 38
+    },
+    {
+        "eventType": {
+            "id": "451485",
+            "name": "Winter Sports"
+        },
+        "marketCount": 9
+    },
+    {
+        "eventType": {
+            "id": "11",
+            "name": "Cycling"
+        },
+        "marketCount": 1
+    },
+    {
+        "eventType": {
+            "id": "136332",
+            "name": "Chess"
+        },
+        "marketCount": 2
+    },
+    {
+        "eventType": {
+            "id": "7522",
+            "name": "Basketball"
+        },
+        "marketCount": 916
+    },
+    {
+        "eventType": {
+            "id": "1477",
+            "name": "Rugby League"
+        },
+        "marketCount": 2
+    },
+    {
+        "eventType": {
+            "id": "4339",
+            "name": "Greyhound Racing"
+        },
+        "marketCount": 256
+    },
+    {
+        "eventType": {
+            "id": "627555",
+            "name": "Badminton"
+        },
+        "marketCount": 1
+    },
+    {
+        "eventType": {
+            "id": "6231",
+            "name": "Financial Bets"
+        },
+        "marketCount": 51
+    },
+    {
+        "eventType": {
+            "id": "2378961",
+            "name": "Politics"
+        },
+        "marketCount": 83
+    },
+    {
+        "eventType": {
+            "id": "998917",
+            "name": "Volleyball"
+        },
+        "marketCount": 107
+    },
+    {
+        "eventType": {
+            "id": "998918",
+            "name": "Bowls"
+        },
+        "marketCount": 20
+    },
+    {
+        "eventType": {
+            "id": "26420387",
+            "name": "Mixed Martial Arts"
+        },
+        "marketCount": 34
+    },
+    {
+        "eventType": {
+            "id": "3503",
+            "name": "Darts"
+        },
+        "marketCount": 29
+    },
+    {
+        "eventType": {
+            "id": "72382",
+            "name": "Pool"
+        },
+        "marketCount": 1
+    },
+    {
+        "eventType": {
+            "id": "2152880",
+            "name": "Gaelic Games"
+        },
+        "marketCount": 8
+    },
+    {
+        "eventType": {
+            "id": "6422",
+            "name": "Snooker"
+        },
+        "marketCount": 68
+    },
+    {
+        "eventType": {
+            "id": "2593174",
+            "name": "Table Tennis"
+        },
+        "marketCount": 1
+    },
+    {
+        "eventType": {
+            "id": "6423",
+            "name": "American Football"
+        },
+        "marketCount": 373
+    },
+    {
+        "eventType": {
+            "id": "7511",
+            "name": "Baseball"
+        },
+        "marketCount": 1
+    }
+]
