@@ -6,6 +6,8 @@ version := "2.0-SNAPSHOT"
 
 scalaVersion := "2.10.4"
 
+resolvers += "Typesafe Releases" at "https://repo.typesafe.com/typesafe/releases/"
+
 // crossScalaVersions := Seq("2.10.4", "2.11.2")
 
 libraryDependencies ++= {
@@ -19,4 +21,3 @@ libraryDependencies <+= scalaVersion {
   case "2.10.4" => "org.scalatest" % "scalatest_2.10" % "2.2.1" % "test"
   case _ => "org.scalatest" % "scalatest_2.11" % "2.2.1" % "test"
 }
-
