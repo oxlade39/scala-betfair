@@ -18,21 +18,17 @@ trait Betfair {
   def listMarketBook(request: AuthorisedRequest):        Future[List[ListMarketBookResponse]]
 }
 
-trait Endpoints {
-  def endpoint(operation: String) = s"https://api.betfair.com/exchange/betting/rest/v1.0/$operation/"
-
-  val Login = "https://identitysso.betfair.com/api/login"
-  val ListEvents = endpoint("listEvents")
-  val ListEventTypes = endpoint("listEventTypes")
-  val ListMarketCatalogue = endpoint("listMarketCatalogue")
-  val ListMarketBook = endpoint("listMarketBook")
-}
-
-trait WSBetfair extends Betfair with Endpoints {
-  import uk.co.softsquare.privetng.response._
-
+trait BaseEndpoint {
   def executionContext(): ExecutionContext
   implicit val ex: ExecutionContext = executionContext()
+
+  def endpoint(operation: String) = s"https://api.betfair.com/exchange/betting/rest/v1.0/$operation/"
+}
+
+trait LoginAction extends BaseEndpoint {
+  import uk.co.softsquare.privetng.response._
+
+  val Login = "https://identitysso.betfair.com/api/login"
 
   def login(credentials: Credentials): Future[LoginResponse] =
     WS.url(Login)
@@ -43,9 +39,41 @@ trait WSBetfair extends Betfair with Endpoints {
       .withRequestTimeout(1000)
       .withFollowRedirects(follow = true)
       .post(Map(
-        "username" -> Seq(credentials.username),
-        "password" -> Seq(credentials.password))
+      "username" -> Seq(credentials.username),
+      "password" -> Seq(credentials.password))
       ).map(response => response.json.as[LoginResponse])
+}
+
+trait ListEventsTypesAction extends BaseEndpoint {
+  import uk.co.softsquare.privetng.response._
+
+  val ListEventTypes = endpoint("listEventTypes")
+
+  def listEventTypes(request: AuthorisedRequest): Future[List[ListEventTypesResponse]] =
+    WS.urlWithHeaders(ListEventTypes, request.token)
+      .post(Json.obj(
+      "filter" -> Json.toJson(request.filter)
+    )).map(response =>
+      response.json.as[List[ListEventTypesResponse]]
+    )
+}
+
+trait ListEventsAction extends BaseEndpoint {
+  import uk.co.softsquare.privetng.response._
+
+  val ListEvents = endpoint("listEvents")
+
+  def listEvents(request: AuthorisedRequest): Future[List[ListEventsResponse]] =
+    WS.urlWithHeaders(ListEvents, request.token)
+      .post(Json.obj(
+      "filter" -> Json.toJson(request.filter)
+    )).map(response => response.json.as[List[ListEventsResponse]])
+}
+
+trait ListMarketCatalogueAction extends BaseEndpoint {
+  import uk.co.softsquare.privetng.response._
+
+  val ListMarketCatalogue = endpoint("listMarketCatalogue")
 
   def listMarketCatalogue(request: AuthorisedRequest): Future[List[MarketCatalogueResponse]] =
     WS.urlWithHeaders(ListMarketCatalogue, request.token)
@@ -53,27 +81,28 @@ trait WSBetfair extends Betfair with Endpoints {
       "filter" -> Json.toJson(request.filter),
       "maxResults" -> request.maxResults
     )).map(response => response.json.as[List[MarketCatalogueResponse]])
+}
 
-  def listEventTypes(request: AuthorisedRequest): Future[List[ListEventTypesResponse]] =
-    WS.urlWithHeaders(ListEventTypes, request.token)
-      .post(Json.obj(
-        "filter" -> Json.toJson(request.filter)
-      )).map(response =>
-        response.json.as[List[ListEventTypesResponse]]
-      )
+trait ListMarketAction extends BaseEndpoint {
+  import uk.co.softsquare.privetng.response._
 
-  def listEvents(request: AuthorisedRequest): Future[List[ListEventsResponse]] =
-    WS.urlWithHeaders(ListEvents, request.token)
-      .post(Json.obj(
-        "filter" -> Json.toJson(request.filter)
-    )).map(response => response.json.as[List[ListEventsResponse]])
+  val ListMarketBook = endpoint("listMarketBook")
 
   def listMarketBook(request: AuthorisedRequest): Future[List[ListMarketBookResponse]] =
     WS.urlWithHeaders(ListMarketBook, request.token)
       .post(Json.obj(
-        "marketIds" -> Json.toJson(request.filter.marketIds)
-    )).map(response =>
-      response.json.as[List[ListMarketBookResponse]])
+      "marketIds" -> Json.toJson(request.filter.marketIds)
+    )).map(response => response.json.as[List[ListMarketBookResponse]])
+}
+
+trait WSBetfair
+  extends Betfair
+  with LoginAction
+  with ListEventsTypesAction
+  with ListEventsAction
+  with ListMarketCatalogueAction
+  with ListMarketAction {
+
 }
 
 object Test extends App {
