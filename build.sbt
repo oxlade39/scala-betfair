@@ -1,3 +1,5 @@
+seq(githubPagesMavenPublishSettings: _*)
+
 name := "scala-betfair"
 
 organization := "com.github.oxlade39"
@@ -9,6 +11,10 @@ scalaVersion := "2.10.4"
 resolvers += "Typesafe Releases" at "https://repo.typesafe.com/typesafe/releases/"
 
 // crossScalaVersions := Seq("2.10.4", "2.11.2")
+
+githubPagesCheckoutDir := Path.userHome / "proj" / "oxlade39.github.com" / "_site" / "maven"
+
+publishMavenStyle := true
 
 libraryDependencies ++= {
   val playVersion = "2.3.6"
