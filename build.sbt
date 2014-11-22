@@ -1,4 +1,4 @@
-GithubPagesMavenPublish.autoImport.githubPagesMavenPublishSettings
+GithubPagesMavenPublish.githubPagesMavenPublishSettings
 
 name := "scala-betfair"
 
