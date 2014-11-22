@@ -37,17 +37,15 @@ trait LoginAction extends BaseEndpoint { self: HttpComponent =>
     )
 }
 
-trait ListEventsTypesAction extends BaseEndpoint {
+trait ListEventsTypesAction extends BaseEndpoint { self: HttpComponent =>
   import uk.co.softsquare.privetng.response._
 
   val ListEventTypes = endpoint("listEventTypes")
 
   def listEventTypes(request: AuthorisedRequest): Future[List[ListEventTypesResponse]] =
-    WS.urlWithHeaders(ListEventTypes, request.token)
-      .post(Json.obj(
-      "filter" -> Json.toJson(request.filter)
-    )).map(response =>
-      response.json.as[List[ListEventTypesResponse]]
+    http.postJson[List[ListEventTypesResponse]](
+      url = ListEventTypes, token = request.token,
+      body = Json.obj("filter" -> Json.toJson(request.filter))
     )
 }
 
