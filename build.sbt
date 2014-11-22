@@ -1,4 +1,4 @@
-seq(GithubPagesMavenPublish.autoImport.githubPagesMavenPublishSettings: _*)
+GithubPagesMavenPublish.autoImport.githubPagesMavenPublishSettings
 
 name := "scala-betfair"
 
