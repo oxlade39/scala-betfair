@@ -2,7 +2,7 @@ package uk.co.softsquare.privetng.service
 
 import org.joda.time.DateTime
 import play.api.libs.json.Json
-import uk.co.softsquare.privetng.WS
+import uk.co.softsquare.privetng.{WSHttpComponent, HttpComponent, WS}
 import uk.co.softsquare.privetng.auth.Session.{LoginResponse, Token}
 import uk.co.softsquare.privetng.auth.{Credentials, Account, Session}
 import uk.co.softsquare.privetng.request.{TimeRange, MarketFilter, AuthorisedRequest}
@@ -25,23 +25,16 @@ trait BaseEndpoint {
   def endpoint(operation: String) = s"https://api.betfair.com/exchange/betting/rest/v1.0/$operation/"
 }
 
-trait LoginAction extends BaseEndpoint {
+trait LoginAction extends BaseEndpoint { self: HttpComponent =>
   import uk.co.softsquare.privetng.response._
 
   val Login = "https://identitysso.betfair.com/api/login"
 
   def login(credentials: Credentials): Future[LoginResponse] =
-    WS.url(Login)
-      .withHeaders(
-        "X-Application" -> Account.ApplicationKey,
-        "Accept" -> "application/json"
-      )
-      .withRequestTimeout(1000)
-      .withFollowRedirects(follow = true)
-      .post(Map(
+    http.post[LoginResponse](url = Login, body = Map(
       "username" -> Seq(credentials.username),
       "password" -> Seq(credentials.password))
-      ).map(response => response.json.as[LoginResponse])
+    )
 }
 
 trait ListEventsTypesAction extends BaseEndpoint {
@@ -101,13 +94,14 @@ trait WSBetfair
   with ListEventsTypesAction
   with ListEventsAction
   with ListMarketCatalogueAction
-  with ListMarketAction {
+  with ListMarketAction
+  with WSHttpComponent {
 
 }
 
 object Test extends App {
   val bf = new WSBetfair {
-    override def executionContext(): ExecutionContext = ExecutionContext.global
+    override def executionContext: ExecutionContext = ExecutionContext.global
   }
   import bf.ex
 
