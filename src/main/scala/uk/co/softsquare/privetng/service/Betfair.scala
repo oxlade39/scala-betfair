@@ -61,29 +61,30 @@ trait ListEventsAction extends BaseEndpoint { self: HttpComponent =>
     )
 }
 
-trait ListMarketCatalogueAction extends BaseEndpoint {
+trait ListMarketCatalogueAction extends BaseEndpoint { self: HttpComponent =>
   import uk.co.softsquare.privetng.response._
 
   val ListMarketCatalogue = endpoint("listMarketCatalogue")
 
   def listMarketCatalogue(request: AuthorisedRequest): Future[List[MarketCatalogueResponse]] =
-    WS.urlWithHeaders(ListMarketCatalogue, request.token)
-      .post(Json.obj(
-      "filter" -> Json.toJson(request.filter),
-      "maxResults" -> request.maxResults
-    )).map(response => response.json.as[List[MarketCatalogueResponse]])
+    http.postJson[List[MarketCatalogueResponse]](
+      url = ListMarketCatalogue, token = request.token,
+      body = Json.obj(
+        "filter" -> Json.toJson(request.filter),
+        "maxResults" -> request.maxResults
+      ))
 }
 
-trait ListMarketAction extends BaseEndpoint {
+trait ListMarketAction extends BaseEndpoint { self: HttpComponent =>
   import uk.co.softsquare.privetng.response._
 
   val ListMarketBook = endpoint("listMarketBook")
 
   def listMarketBook(request: AuthorisedRequest): Future[List[ListMarketBookResponse]] =
-    WS.urlWithHeaders(ListMarketBook, request.token)
-      .post(Json.obj(
-      "marketIds" -> Json.toJson(request.filter.marketIds)
-    )).map(response => response.json.as[List[ListMarketBookResponse]])
+    http.postJson[List[ListMarketBookResponse]](
+      url = ListMarketBook, token = request.token,
+      body = Json.obj("marketIds" -> Json.toJson(request.filter.marketIds))
+    )
 }
 
 trait WSBetfair

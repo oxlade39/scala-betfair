@@ -1,4 +1,4 @@
-GithubPagesMavenPublish.githubPagesMavenPublishSettings
+seq(githubPagesMavenPublishSettings: _*)
 
 name := "scala-betfair"
 
