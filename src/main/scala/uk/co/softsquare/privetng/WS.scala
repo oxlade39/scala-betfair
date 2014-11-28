@@ -1,5 +1,7 @@
 package uk.co.softsquare.privetng
 
+import java.util.concurrent.Executors
+
 import play.api.libs.json.{Reads, JsValue}
 import uk.co.softsquare.privetng.auth.Account
 
@@ -8,6 +10,7 @@ import scala.concurrent.{ExecutionContext, Future}
 trait Http {
   def post[T](url: String, body: Map[String, Seq[String]])(implicit fjs: Reads[T]): Future[T]
   def postJson[T](url: String, body: JsValue, token: String)(implicit fjs: Reads[T]): Future[T]
+  def shutdown()
 }
 
 trait HttpComponent {
@@ -47,6 +50,13 @@ trait WSHttpComponent extends HttpComponent {
 
     override def postJson[T](url: String, body: JsValue, token: String)(implicit fjs: Reads[T]): Future[T] =
       WS.urlWithHeaders(url, token).post(body).map(_.json.as[T])
+
+    /**
+     * Can't be run in the same thread pool as the WS.client
+     */
+    override def shutdown(): Unit = new Thread(new Runnable {
+      override def run(): Unit = WS.client.close()
+    }).start()
 
   }
 }

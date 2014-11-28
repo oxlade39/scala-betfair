@@ -127,7 +127,9 @@ object Test extends App {
       MarketFilter(marketIds = sorted.map(_.marketId).toSet),
       100
     ))
-  } yield books
+  } yield books.map(listMarketBookResponse => sorted.find(_.marketId == listMarketBookResponse.marketId).get.marketName -> listMarketBookResponse)
 
-  soccer.onComplete{result => println(result); sys.exit()}
+  soccer.onSuccess {
+    case responses => responses foreach println
+  }
 }

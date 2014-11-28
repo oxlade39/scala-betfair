@@ -1,6 +1,7 @@
 package uk.co.softsquare.privetng.response
 
 import org.joda.time.DateTime
+import uk.co.softsquare.privetng.util.ReflectiveToString
 
 /**
  *
@@ -16,4 +17,4 @@ import org.joda.time.DateTime
     }
  */
 case class ListEventsResponse(event: Event, marketCount: Int)
-case class Event(id: String, name: String, countryCode: Option[String], timezone: String, openDate: DateTime)
+case class Event(id: String, name: String, countryCode: Option[String], timezone: String, openDate: DateTime) extends ReflectiveToString
