@@ -13,6 +13,7 @@ case class TimeRange(from: DateTime, to: DateTime) {
 }
 case class MarketFilter(eventTypeIds: Set[String] = Set.empty,
                         eventIds: Set[String] = Set.empty,
+                        competitionIds: Set[String] = Set.empty,
                         marketIds: Set[String] = Set.empty,
                         marketStartTime: Option[TimeRange] = None)
 
@@ -20,4 +21,6 @@ object TimeRange {
   val Today = TimeRange(from = new DateTime().withTimeAtStartOfDay(), to = new DateTime().withTimeAtStartOfDay().plusDays(1))
   val Tomorrow = Today.plusDays(1)
   val TheNextHour = TimeRange(from = new DateTime(), to = new DateTime().plusHours(1))
+
+  def nextDays(days: Int) = TimeRange(from = new DateTime(), to = new DateTime().plusDays(days))
 }

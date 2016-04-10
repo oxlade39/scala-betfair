@@ -30,5 +30,63 @@ case class Runner(
   adjustmentFactor: Option[Double], // The adjustment factor applied if the selection is removed
   lastPriceTraded: Option[Double], // The price of the most recent bet matched on this selection
   totalMatched: Option[Double], // The total amount matched on this runner
-  removalDate: Option[DateTime] // If date and time the runner was removed
+  removalDate: Option[DateTime], // If date and time the runner was removed
+  sp: Option[StartingPrices], //The BSP related prices for this runner
+  ex: Option[ExchangePrices], //The Exchange prices available for this runner
+  orders: Option[List[Order]], //List of orders in the market
+  matches: Option[List[Match]] //List of matches (i.e, orders that have been fully or partially executed)
 ) extends ReflectiveToString
+
+case class StartingPrices(
+  nearPrice: Option[Double],
+  farPrice: Option[Double],
+  backStakeTaken: Option[List[PriceSize]],
+  layLiabilityTaken: Option[List[PriceSize]],
+  actualSP: Option[Double]
+) extends ReflectiveToString
+
+case class ExchangePrices(
+  availableToBack: Option[List[PriceSize]],
+  availableToLay: Option[List[PriceSize]],
+  tradedVolume: Option[List[PriceSize]]
+) extends ReflectiveToString
+
+case class PriceSize(
+  price: Double,
+  size: Double
+) extends ReflectiveToString
+
+case class Order(
+  betId: String,
+  orderType: String, //OrderType
+  status: String, // -> OrderStatus
+  persistenceType: String, // -> PersistenceType
+  side: String, // -> Side
+  price: Double,
+  size: Double,
+  bspLiability: Double,
+  placedDate: DateTime,
+  avgPriceMatched: Option[Double],
+  sizeMatched: Option[Double],
+  sizeRemaining: Option[Double],
+  sizeLapsed: Option[Double],
+  sizeCancelled: Option[Double],
+  sizeVoided: Option[Double]
+) extends ReflectiveToString
+
+case class Match(
+  betId: Option[String],
+  matchId: Option[String],
+  side: String,
+  price: Double,
+  size: Double,
+  matchDate: Option[DateTime]
+) extends ReflectiveToString
+
+object RunnerStatus {
+  val Active = "ACTIVE"
+  val Removed = "REMOVED"
+  val Winner = "WINNER"
+  val Loser = "LOSER"
+  val Hidden = "HIDDEN"
+}
