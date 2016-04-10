@@ -1,12 +1,12 @@
 package uk.co.softsquare.privetng.service
 
-import org.joda.time.DateTime
 import play.api.libs.json.Json
-import uk.co.softsquare.privetng.{WSHttpComponent, HttpComponent, WS}
-import uk.co.softsquare.privetng.auth.Session.{LoginResponse, Token}
-import uk.co.softsquare.privetng.auth.{Credentials, Account, Session}
-import uk.co.softsquare.privetng.request.{TimeRange, MarketFilter, AuthorisedRequest}
-import uk.co.softsquare.privetng.response.{ListMarketBookResponse, ListEventTypesResponse, ListEventsResponse, MarketCatalogueResponse}
+import uk.co.softsquare.privetng.{HttpComponent, WSHttpComponent}
+import uk.co.softsquare.privetng.auth.Session.LoginResponse
+import uk.co.softsquare.privetng.auth.Credentials
+import uk.co.softsquare.privetng.enums.Wallet
+import uk.co.softsquare.privetng.request.{AuthorisedRequest, CancelOrdersRequest, ListMarketBookRequest, MarketFilter, PlaceOrdersRequest, ReplaceOrdersRequest, TimeRange, UpdateOrdersRequest}
+import uk.co.softsquare.privetng.response.{ListCompetitionsResponse, ListEventTypesResponse, ListEventsResponse, ListMarketBookResponse, MarketCatalogueResponse}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -15,7 +15,8 @@ trait Betfair {
   def listEvents(request: AuthorisedRequest):            Future[List[ListEventsResponse]]
   def listEventTypes(request: AuthorisedRequest):        Future[List[ListEventTypesResponse]]
   def listMarketCatalogue(request: AuthorisedRequest):   Future[List[MarketCatalogueResponse]]
-  def listMarketBook(request: AuthorisedRequest):        Future[List[ListMarketBookResponse]]
+  def listMarketBook(request: AuthorisedRequest, body: ListMarketBookRequest): Future[List[ListMarketBookResponse]]
+  def listCompetitions(request: AuthorisedRequest):      Future[List[ListCompetitionsResponse]]
 }
 
 trait BaseEndpoint {
@@ -85,6 +86,89 @@ trait ListMarketAction extends BaseEndpoint { self: HttpComponent =>
       url = ListMarketBook, token = request.token,
       body = Json.obj("marketIds" -> Json.toJson(request.filter.marketIds))
     )
+
+  def listMarketBook(request: AuthorisedRequest, requestBody: ListMarketBookRequest): Future[List[ListMarketBookResponse]] = {
+    http.postJson[List[ListMarketBookResponse]](
+      url = ListMarketBook, token = request.token,
+      body = Json.toJson(requestBody)
+    )
+  }
+}
+
+trait ListCompetitionsAction extends BaseEndpoint { self: HttpComponent =>
+  import uk.co.softsquare.privetng.response._
+
+  val ListCompetitions = endpoint("listCompetitions")
+
+  def listCompetitions(request: AuthorisedRequest): Future[List[ListCompetitionsResponse]] =
+    http.postJson[List[ListCompetitionsResponse]](
+      url = ListCompetitions, token = request.token,
+      body = Json.obj("filter" -> Json.toJson(request.filter))
+    )
+}
+
+trait PlaceOrdersAction extends BaseEndpoint { self: HttpComponent =>
+  import uk.co.softsquare.privetng.response._
+
+  val PlaceOrders = endpoint("placeOrders")
+
+  def placeOrders(request: AuthorisedRequest, requestBody: PlaceOrdersRequest): Future[PlaceExecutionReport] = {
+    http.postJson[PlaceExecutionReport](
+      url = PlaceOrders, token = request.token,
+      body = Json.toJson(requestBody)
+    )
+  }
+}
+
+trait CancelOrdersAction extends BaseEndpoint { self: HttpComponent =>
+  import uk.co.softsquare.privetng.response._
+
+  val CancelOrders = endpoint("cancelOrders")
+
+  def cancelOrders(request: AuthorisedRequest, requestBody: CancelOrdersRequest): Future[CancelExecutionReport] = {
+    http.postJson[CancelExecutionReport](
+      url = CancelOrders, token = request.token,
+      body = Json.toJson(requestBody)
+    )
+  }
+}
+
+trait ReplaceOrdersAction extends BaseEndpoint { self: HttpComponent =>
+  import uk.co.softsquare.privetng.response._
+
+  val ReplaceOrders = endpoint("replaceOrders")
+
+  def replaceOrders(request: AuthorisedRequest, requestBody: ReplaceOrdersRequest): Future[ReplaceExecutionReport] = {
+    http.postJson[ReplaceExecutionReport](
+      url = ReplaceOrders, token = request.token,
+      body = Json.toJson(requestBody)
+    )
+  }
+}
+
+trait UpdateOrdersAction extends BaseEndpoint { self: HttpComponent =>
+  import uk.co.softsquare.privetng.response._
+
+  val UpdateOrders = endpoint("updateOrders")
+
+  def updateOrders(request: AuthorisedRequest, requestBody: UpdateOrdersRequest): Future[UpdateExecutionReport] = {
+    http.postJson[UpdateExecutionReport](
+      url = UpdateOrders, token = request.token,
+      body = Json.toJson(requestBody)
+    )
+  }
+}
+
+trait GetAccountFundsAction extends BaseEndpoint { self: HttpComponent =>
+  import uk.co.softsquare.privetng.response._
+
+  val GetAccountFunds = endpoint("getAccountFunds")
+
+  def getAccountFunds(request: AuthorisedRequest, wallet: String = Wallet.Uk): Future[AccountFundsResponse] = {
+    http.postJson[AccountFundsResponse](
+      url = GetAccountFunds, token = request.token, body = Json.obj("wallet" -> wallet)
+    )
+  }
 }
 
 trait WSBetfair
@@ -94,42 +178,12 @@ trait WSBetfair
   with ListEventsAction
   with ListMarketCatalogueAction
   with ListMarketAction
+  with ListCompetitionsAction
+  with PlaceOrdersAction
+  with CancelOrdersAction
+  with ReplaceOrdersAction
+  with UpdateOrdersAction
+  with GetAccountFundsAction
   with WSHttpComponent {
 
-}
-
-object Test extends App {
-  val bf = new WSBetfair {
-    override def executionContext: ExecutionContext = ExecutionContext.global
-  }
-  import bf.ex
-
-  val soccer = for {
-    loginResponse <- bf.login(Credentials.fromConsole())
-    eventTypes <- bf.listEventTypes(AuthorisedRequest(loginResponse.token))
-    soccerEvents <- {
-      val soccerEvent = eventTypes.find(eventType => eventType.eventType.name.toLowerCase.contains("soccer"))
-      bf.listEvents(AuthorisedRequest(token = loginResponse.token,
-        filter = MarketFilter(
-          eventTypeIds = Set(soccerEvent.get.eventType.id),
-          marketStartTime = Some(TimeRange.Tomorrow.plusDays(1))
-        ), maxResults = 100))
-    }
-    market <- {
-      val eventIds = soccerEvents.filter(_.event.name.contains("England")).map(_.event.id)
-      bf.listMarketCatalogue(AuthorisedRequest(loginResponse.token,
-        MarketFilter(eventIds = eventIds.toSet),
-        100
-      ))
-    }
-    sorted <- Future(market.sortBy(_.totalMatched)(Ordering[Double].reverse))
-    books <- bf.listMarketBook(AuthorisedRequest(loginResponse.token,
-      MarketFilter(marketIds = sorted.map(_.marketId).toSet),
-      100
-    ))
-  } yield books.map(listMarketBookResponse => sorted.find(_.marketId == listMarketBookResponse.marketId).get.marketName -> listMarketBookResponse)
-
-  soccer.onSuccess {
-    case responses => responses foreach println
-  }
 }
